@@ -1,0 +1,1 @@
+jQuery(document).ready(function(c){"use strict";c(document).on("click",".tutor-gradebook-filter",function(e){var o,t="",r=window.location.href,i=c(".tutor-gradebook-filter-select option").filter(":selected").val(),t=r.includes("courseid")?((o=new URL(r)).searchParams.set("courseid",i),o.toString()):r+"&courseid="+i;window.location.href=t})});
