@@ -194,7 +194,7 @@ if ($has_items > 0) { ?>
                                                     </label>
                                                     <span>
                                                         <?php esc_html_e( $meeting_data['id'] );?>
-                                                        <i class="tutor-icon-copy" data-zoom-info="<?php esc_html_e( $meeting_data['id'] );?>"></i>
+                                                        <i class="tutor-icon-copy tutor-copy-text" data-text="<?php esc_html_e( $meeting_data['id'] );?>" data-zoom-info="<?php esc_html_e( $meeting_data['id'] );?>"></i>
                                                     </span>
                                                 </div>
                                             </li>
@@ -205,7 +205,7 @@ if ($has_items > 0) { ?>
                                                     </label>
                                                     <span>
                                                         <?php esc_html_e( $meeting_data['password'] );?>
-                                                        <i class="tutor-icon-copy" data-zoom-info="<?php esc_html_e( $meeting_data['password'] );?>"></i>
+                                                        <i class="tutor-icon-copy tutor-copy-text" data-text="<?php esc_html_e( $meeting_data['password'] );?>" data-zoom-info="<?php esc_html_e( $meeting_data['password'] );?>"></i>
                                                     </span>
                                                 </div>
                                             </li>
@@ -216,7 +216,7 @@ if ($has_items > 0) { ?>
                                                     </label>
                                                     <span>
                                                         <?php esc_html_e( $meeting_data['host_email'] );?>
-                                                        <i class="tutor-icon-copy" data-zoom-info="<?php esc_html_e( $meeting_data['host_email'] );?>"></i>
+                                                        <i class="tutor-icon-copy tutor-copy-text" data-text="<?php esc_html_e( $meeting_data['host_email'] );?>" data-zoom-info="<?php esc_html_e( $meeting_data['host_email'] );?>"></i>
                                                     </span>
                                                 </div>
                                             </li>

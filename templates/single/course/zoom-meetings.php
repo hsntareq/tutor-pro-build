@@ -38,8 +38,8 @@ if ($is_enrolled || ($course_content_access && ($is_administrator || $is_instruc
                                     ?>
                                 </h3>
                                 <div>
-                                    <p><?php _e('ID', 'tutor-pro'); ?>: <span><?php echo $meeting_data['id']; ?></span> <i class="tutor-icon-copy"></i></p>
-                                    <p><?php _e('Password', 'tutor-pro'); ?>: <span><?php echo $meeting_data['password']; ?></span> <i class="tutor-icon-copy"></i></p>
+                                    <p><?php _e('ID', 'tutor-pro'); ?>: <span><?php echo $meeting_data['id']; ?></span> <i class="tutor-icon-copy tutor-copy-text" data-text="<?php echo $meeting_data['id']; ?>"></i></p>
+                                    <p><?php _e('Password', 'tutor-pro'); ?>: <span><?php echo $meeting_data['password']; ?></span> <i class="tutor-icon-copy tutor-copy-text" data-text="<?php echo $meeting_data['password']; ?>"></i></p>
                                 </div>
                             </div>
                             <div class="tutor-zoom-meeting-toggle-icon">

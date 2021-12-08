@@ -64,14 +64,10 @@ class BuddyPressGroups {
 
 
 	public function tutor_bp_group_activities($action, $activity, $r ){
-		//var_dump($activity);
-		//echo "<br /> <hr /> {$action} <hr /> <br />";
-		//return '<a href="#">John Doe</a> updated a lesson';
-
+		
 		//return 'this is a posted header';
 		$time = bp_insert_activity_meta();
-		//return '<a href="">John Doe</a> HelloWorld ';
-
+		
 		return $action;
 	}
 

@@ -4,14 +4,11 @@ if ( ! defined( 'ABSPATH' ) )
 ?>
 
 
-<?php if($is_setting_page): ?>
 <div class="tutor-option-field-row">
     <div class="tutor-option-field-label">
         <label for=""><?php _e('Select Certificate Template', 'tutor-pro'); ?></label>
     </div>
     <div class="tutor-option-field">
-<?php endif; ?>
-
         <div class="tutor-certificate-templates-fields">
 			<?php
 			if (tutor_utils()->count($templates)){
@@ -48,9 +45,5 @@ if ( ! defined( 'ABSPATH' ) )
 		    }
 		    ?>
         </div>
-
-
-<?php if($is_setting_page): ?>
     </div>
 </div>
-<?php endif; ?>

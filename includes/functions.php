@@ -181,41 +181,68 @@ if ( ! function_exists('tutor_generate_grade_html')) {
 		ob_start();
 
 		if ( $grade ) {
-			$config                       = maybe_unserialize( $grade->grade_config );
-			$gradebook_enable_grade_point = get_tutor_option( 'gradebook_enable_grade_point' );
-			$gradebook_show_grade_scale   = get_tutor_option( 'gradebook_show_grade_scale' );
-			$gradebook_scale_separator    = get_tutor_option( 'gradebook_scale_separator' );
-			$gradebook_scale              = get_tutor_option( 'gradebook_scale' );
-
-			$grade_name = '';
-			if ( ! empty($grade->grade_name)){
-				$grade_name = $grade->grade_name;
-			}else{
-				$new_grade = get_gradebook_by_point($grade->earned_grade_point);
-				if ($new_grade){
-					$grade_name = $new_grade->grade_name;
-					$config = maybe_unserialize( $new_grade->grade_config );
-				}
-			}
+			$config = maybe_unserialize( $grade->grade_config );
+			
+			$stat = tutor_gradebook_get_stats($grade);
+			$stat['config'] ? $config=$stat['config'] : 0;
 
 			$bgcolor = tutils()->array_get( 'grade_color', $config );
 			if ($style === 'bgfill'){
-				echo "<span class='gradename-bg {$style}' style='background-color: {$bgcolor};'>{$grade_name}</span> ";
+				echo "<span class='gradename-bg {$style}' style='background-color: {$bgcolor};'>{$stat['gradename']}</span> ";
 			}else{
-				echo "<span class='gradename-outline {$style}' style='color: {$bgcolor};'>{$grade_name}</span> ";
+				echo "<span class='gradename-outline {$style}' style='color: {$bgcolor};'>{$stat['gradename']}</span> ";
 			}
 
-			$grade_point = ! empty($grade->earned_grade_point) ? $grade->earned_grade_point : $grade->grade_point;
-			if ( $gradebook_enable_grade_point ) {
-				echo "<span class='gradebook-earned-grade-point'>{$grade_point}</span>";
-			}
-			if ( $gradebook_show_grade_scale ) {
-				echo "<span class='gradebook-scale-separator'>{$gradebook_scale_separator}</span><span class='gradebook_scale'>{$gradebook_scale}</span>";
+			if ( $stat['gradepoint'] ) {
+				echo "<span class='gradebook-earned-grade-point'>{$stat['gradepoint']}</span>";
 			}
 		}
 		$output = apply_filters( 'tutor_gradebook_grade_output_html', ob_get_clean(), $grade );
 
 		return $output;
+	}
+}
+
+if(!function_exists('tutor_gradebook_get_stats')) {
+	function tutor_gradebook_get_stats($grade) {
+
+		$grade_name = '';
+		$grade_point = '';
+		$grade_point_only = '';
+		$config = null;
+
+		$gradebook_scale = get_tutor_option( 'gradebook_scale' );
+
+		// Get grade name
+		if ( ! empty($grade->grade_name)){
+			$grade_name = $grade->grade_name;
+		}else{
+			$new_grade = get_gradebook_by_point($grade->earned_grade_point);
+			if ($new_grade){
+				$grade_name = $new_grade->grade_name;
+				$config = maybe_unserialize( $new_grade->grade_config );
+			}
+		}
+
+		// Get grade point
+		if(get_tutor_option( 'gradebook_enable_grade_point' )) {
+			$grade_point_only = !empty($grade->earned_grade_point) ? $grade->earned_grade_point : $grade->grade_point;
+			$grade_point = $grade_point_only;
+		}
+
+		// Add scale
+		if(get_tutor_option( 'gradebook_show_grade_scale' )) {
+			$separator = get_tutor_option( 'gradebook_scale_separator', '/' );
+			$grade_point = $grade_point . $separator . $gradebook_scale;
+		}
+		
+		return array(
+			'gradename' => $grade_name,
+			'gradepoint' => $grade_point,
+			'gradescale' => $gradebook_scale,
+			'gradepoint_only' => $grade_point_only,
+			'config' => $config
+		);
 	}
 }
 
@@ -255,45 +282,6 @@ function get_grading_contents_by_course_id($course_id = 0){
 				order by topic.menu_order ASC, items.menu_order ASC;", $course_id));
 
 	return $contents;
-}
-
-/**
- * @param int $course_id
- *
- * Get gradebook generator form
- */
-if ( ! function_exists('get_gradebook_generate_form')) {
-	function get_gradebook_generate_form( $course_id = 0, $echo = true ) {
-		$course_id      = tutils()->get_post_id( $course_id );
-		$gradebooks = tutils()->get_gradebooks();
-		$gading_content = get_grading_contents_by_course_id( $course_id );
-		if ( !tutils()->count($gradebooks) || !tutils()->count( $gading_content ) ) {
-			return;
-		}
-		$final_grade = get_generated_gradebook( 'final', get_the_ID() );
-
-		ob_start();
-		?>
-        <form id="tutor-gradebook-generate-for-course" method="post">
-			<?php tutor_nonce_field(); ?>
-            <input type="hidden" name="tutor_action" value="gradebook_generate_for_course">
-            <input type="hidden" name="course_ID" value="<?php echo get_the_ID(); ?>">
-
-            <p class="generate-course-gradebook-btn-wrap">
-                <button type="submit" class="tutor-button tutor-button-block button-primary"><i class="tutor-icon-spreadsheet"></i>
-					<?php $final_grade ? _e( 'Re-generate Gradebook', 'tutor-pro' ) : _e( 'Generate Gradebook', 'tutor-pro' ); ?>
-                </button>
-            </p>
-        </form>
-		<?php
-		$output = apply_filters('get_gradebook_generate_form_html', ob_get_clean(), $course_id);
-
-		if ($echo){
-			echo $output;
-		}else{
-			return $output;
-		}
-	}
 }
 
 function get_generated_gradebooks($config = array()){

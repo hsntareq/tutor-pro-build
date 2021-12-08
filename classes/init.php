@@ -62,13 +62,13 @@ class init{
 		$this->load_addons();
 
 		require_once( dirname( __DIR__ ). '/updater/update.php');
-		$this->updater = new \ThemeumUpdater\Update(array(
+		$this->updater = new \TutorPRO\ThemeumUpdater\Update(array(
 			'product_title' => 'Tutor Pro',
 			'product_slug' => 'tutor-pro',
 			'product_basename' => tutor_pro()->basename,
 			'product_type' => 'plugin',
 			'current_version' => TUTOR_PRO_VERSION,
-
+			
 			'menu_title' => 'Tutor Pro License',
 			'parent_menu' => 'tutor',
 			'menu_capability' => 'manage_tutor',

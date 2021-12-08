@@ -131,6 +131,7 @@ class Instructor_Signature {
     }
 
     public function get_instructor_signature($user_id) {
+        // Get personal signature image from user meta
         $id = get_user_meta($user_id, $this->image_meta, true);
         $valid = is_numeric($id);
 

@@ -5,7 +5,7 @@
         <span class="tutor-gc-class-code">
             <span><?php echo __('Code', 'tutor-pro'); ?>: </span>
             <span><?php echo $classroom_info->enrollmentCode; ?></span>
-            <span class="tutor-icon-copy tutor-gc-copy-text" data-text="<?php echo $classroom_info->enrollmentCode; ?>"></span>
+            <span class="tutor-icon-copy tutor-copy-text" data-text="<?php echo $classroom_info->enrollmentCode; ?>"></span>
         </span>
 
         <a class="tutor-gc-class-go-to" href="<?php echo $classroom_info->alternateLink; ?>">

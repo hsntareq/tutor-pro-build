@@ -5,7 +5,7 @@ Tags: lms, course, elearning, education, learning management system
 Requires at least: 4.5
 Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 1.9.10
+Stable tag: 1.9.12
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -239,6 +239,18 @@ Tutor enables you to use any third party plugins without facing any compatibilit
 17. Tutor LMS Working Lifecycle
 
 == Changelog ==
+
+= 1.9.12 - October 27, 2021 =
+
+Fix: Custom certificate template not downloading
+
+= 1.9.11 - October 18, 2021 =
+
+New: Certificate Builder plugin compatibility
+Update: Gradebook data generates automatically
+Update: Generate Gradebook button removed
+Fix: Gradebook data not deleting on course retake
+Fix: XSS vulnerability in registration page
 
 = 1.9.10 - October 06, 2021 =
 

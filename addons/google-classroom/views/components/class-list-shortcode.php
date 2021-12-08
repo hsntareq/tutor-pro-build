@@ -36,7 +36,7 @@
                                             <div class="code-in-content">
                                                 <span><?php echo __('Code', 'tutor-pro'); ?>: </span>
                                                 <span><?php echo $class->remote_class->enrollmentCode; ?></span>
-                                                <span class="tutor-icon-copy tutor-gc-copy-text" data-text="<?php echo $class->remote_class->enrollmentCode; ?>"></span>
+                                                <span class="tutor-icon-copy tutor-copy-text" data-text="<?php echo $class->remote_class->enrollmentCode; ?>"></span>
                                             </div>
                                         <?php
                                     }

@@ -346,6 +346,8 @@ class Assignments {
 		$assignment_answer    = wp_kses_post(tutor_utils()->array_get('assignment_answer', $_POST));
 		$allowd_upload_files  = (int)tutor_utils()->get_assignment_option($assignment_id, 'upload_files_limit');
 		$assignment_submit_id = tutor_utils()->is_assignment_submitting($assignment_id);
+		$course_id			  = tutor_utils()->get_course_id_by('assignment', $assignment_id);
+		$student_id			  = get_current_user_id();
 
 		do_action('tutor_assignment/before/submit', $assignment_submit_id);
 
@@ -453,15 +455,21 @@ class Assignments {
 
 		do_action('tutor_assignment/evaluate/before');
 
+		// Get data from request
 		$submitted_id    = (int)sanitize_text_field(tutor_utils()->array_get('assignment_submitted_id', $_POST));
 		$evaluate_fields = tutor_utils()->array_get('evaluate_assignment', $_POST);
+
+		// Get assignment info
+		$submitted_assignment = tutor_utils()->get_assignment_submit_info($assignment_submitted_id);
+		$course_id 	     = $submitted_assignment->comment_parent;
+		$student_id		 = $submitted_assignment->user_id;
 
 		foreach ($evaluate_fields as $field_key => $field_value) {
 			update_comment_meta($submitted_id, $field_key, $field_value);
 		}
 		update_comment_meta($submitted_id, 'evaluate_time', $date);
 
-		do_action('tutor_assignment/evaluate/after', $submitted_id);
+		do_action('tutor_assignment/evaluate/after', $submitted_id, $course_id, $student_id);
 	}
 
 	public function show_assignment_submitted_icon($post) {

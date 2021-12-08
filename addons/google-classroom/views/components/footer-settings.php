@@ -30,7 +30,7 @@
                     </div>
                     <div class="col-12 col-md-6" style="text-align:right">
                         <div class="tutor-gc-setting-content">
-                            <?php _e('Classlist Shortcode:', 'tutor-pro'); ?> <span><b>[tutor_gc_classes]</b> <span class="tutor-icon-copy tutor-gc-copy-text" data-text="[tutor_gc_classes]"></span></span>
+                            <?php _e('Classlist Shortcode:', 'tutor-pro'); ?> <span><b>[tutor_gc_classes]</b> <span class="tutor-icon-copy tutor-copy-text" data-text="[tutor_gc_classes]"></span></span>
                         </div>
                     </div>
                 </div>

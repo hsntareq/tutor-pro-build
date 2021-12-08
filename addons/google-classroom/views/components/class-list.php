@@ -77,7 +77,7 @@
                             ?>
                         </td>
                         <td class="tutor-gc-code">
-                            <?php echo $class->enrollmentCode; ?>  <span class="tutor-icon-copy tutor-gc-copy-text" data-text="<?php echo $class->enrollmentCode; ?>"></span>
+                            <?php echo $class->enrollmentCode; ?>  <span class="tutor-icon-copy tutor-copy-text" data-text="<?php echo $class->enrollmentCode; ?>"></span>
                         </td>
                         <td data-class_actions="" class="<?php echo 'class-status-'.$class_; ?>">
                             <button class="button button-primary button-small" data-action="import" data-classroom_id="<?php echo $class->id; ?>">Import</button>

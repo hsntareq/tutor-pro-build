@@ -19,19 +19,34 @@ class GradeBook{
 		add_action('tutor_assignment/evaluate/after', array($this, 'generate_grade'));
 		add_filter('tutor_assignment/single/results/after', array($this, 'filter_assignment_result'), 10, 3);
 		add_filter('tutor_quiz/previous_attempts_html', array($this, 'previous_attempts_html'), 10, 3);
-		add_action('tutor_course/single/actions_btn_group/after', array($this, 'course_single_actions_btn_group'), 10, 0);
-
-		add_action('tutor_action_gradebook_generate_for_course', array($this, 'gradebook_generate_for_course'), 10, 0);
-
+		
 		add_filter('tutor_course/single/enrolled/nav_items_rewrite', array($this, 'add_course_nav_rewrite'));
 		add_filter('tutor_course/single/enrolled/nav_items', array($this, 'add_course_nav_item'));
 		add_action('tutor_course/single/enrolled/gradebook', array($this, 'generate_gradebook_html'));
 
 		add_action('tutor_action_gradebook_result_list_bulk_actions', array($this, 'gradebook_result_list_bulk_actions'), 10, 0);
-		add_action('delete_tutor_course_progress', array($this, 'delete_gradebook_on_retake'), 10, 2 );
+		add_action('delete_tutor_course_progress', array($this, 'delete_gradebook_on_retake'), 11, 2 );
 
 		//Install Sample Grade Data
 		add_action('wp_ajax_import_gradebook_sample_data', array($this, 'import_gradebook_sample_data'));
+
+		// Provide final gradebook
+		add_action( 'tutor_gradebook_get_final_stats', array($this, 'final_gradebook'), 10, 2 );
+
+		// Generate gradebook on various events
+		add_action( 'tutor_quiz/attempt_ended', array($this, 'gradebook_generator_wrapper'), 10, 3 );
+		add_action( 'tutor_assignment/evaluate/after', array($this, 'gradebook_generator_wrapper'), 10, 3 );
+		add_action( 'tutor_quiz/answer/review/after', array($this, 'gradebook_generator_wrapper'), 10, 3 );
+		add_action( 'delete_tutor_course_progress', array($this, 'gradebook_generate'), 10, 2 );
+	}
+
+	public function gradebook_generator_wrapper($variable_id, $course_id, $student_id) {
+		$this->gradebook_generate($course_id, $student_id);
+	}
+
+	public function final_gradebook($response, $course_id) {
+		$grade = get_generated_gradebook('final', $course_id);
+		return tutor_gradebook_get_stats($grade);
 	}
 
 	public function admin_scripts($page){
@@ -279,22 +294,6 @@ class GradeBook{
 		tutor_load_template('single.quiz.previous-attempts', compact('previous_attempts_html', 'previous_attempts', 'quiz_id'), true);
 	}
 
-	public function course_single_actions_btn_group(){
-		get_gradebook_generate_form();
-	}
-
-	public function gradebook_generate_for_course(){
-		$course_ID = (int) sanitize_text_field(tutils()->array_get('course_ID', $_POST));
-		tutils()->checking_nonce();
-
-		$this->gradebook_generate($course_ID);
-
-		$url = trailingslashit(get_permalink($course_ID)).'gradebook';
-		wp_redirect($url);
-		exit();
-	}
-
-
 	/**
 	 * @param $course_ID
 	 * @param int $user_id
@@ -303,15 +302,14 @@ class GradeBook{
 	 *
 	 */
 
-	public function gradebook_generate($course_ID, $user_id = 0){
+	public function gradebook_generate($course_ID, $user_id){
 		global $wpdb;
-
-		$user_id = tutils()->get_user_id($user_id);
 
 		$course_contents = tutils()->get_course_contents_by_id($course_ID);
 		$previous_gen_item = get_generated_gradebook('all', $course_ID);
 
 
+		// Prepare the posts that requires grading
 		if (tutils()->count($course_contents)) {
 			$require_gradding = array();
 			foreach ( $course_contents as $content ) {
@@ -343,30 +341,38 @@ class GradeBook{
             }
         }
 
-
+		// Check if there is anything to generate grade for
 		if ( ! tutils()->count($require_gradding)){
 			return;
 		}
 
-		/**
-		 * re-grade again
-		 */
+		// Regenerate grading
 		if (tutils()->count($require_gradding)){
 
+			// Strip array indexes
 			$require_graddings = array_values($require_gradding);
 
+			// Loop through posts that needs grading
 			foreach ($require_graddings as $course_item) {
 				$earned_percentage = 0;
 
 				if ($course_item->post_type === 'tutor_quiz') {
-					//Get Attempt by grading method
+					// Grading for quiz
+					// Get Attempt by grading method
 					$attempt = tutils()->get_quiz_attempt($course_item->ID, $user_id);
 					if ($attempt){
 						$earned_percentage = $attempt->earned_marks > 0 ? ( number_format(($attempt->earned_marks * 100) / $attempt->total_marks)): 0;
 					}
 
-				}elseif ($course_item->post_type === 'tutor_assignments'){
+				} elseif ($course_item->post_type === 'tutor_assignments'){
+					// Grading for assignment
 					$submitted_info = tutils()->is_assignment_submitted($course_item->ID, $user_id);
+					
+					if($submitted_info && !get_post_meta( $submitted_info->comment_ID, 'evaluate_time', true )) {
+						// Skip if the assignment is not yet evaluated
+						continue;
+					}
+					
 					if ($submitted_info){
 						$submitted_id = $submitted_info->comment_ID;
 						$max_mark = tutor_utils()->get_assignment_option( $submitted_info->comment_post_ID, 'total_mark' );
@@ -463,9 +469,6 @@ class GradeBook{
 				}
 			}
 		}
-
-
-
 	}
 
 	public function generate_gradebook_html($course_id){
@@ -537,7 +540,10 @@ class GradeBook{
 
 	public function delete_gradebook_on_retake($course_id, $user_id) {
 		global $wpdb;
-		$wpdb->delete($wpdb->tutor_gradebooks_results, array('user_id' => $user_id, 'course_id' => $course_id));
+		$wpdb->delete($wpdb->tutor_gradebooks_results, array(
+			'user_id' => $user_id, 
+			'course_id' => $course_id
+		));
 	}
 
 	/**

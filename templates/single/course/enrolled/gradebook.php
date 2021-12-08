@@ -22,34 +22,28 @@ if(!tutils()->count($gradebooks)) {
 }
 
 $grades = get_generated_gradebook('all', $course_id);
-if ( ! tutils()->count($grades)){
-	?>
-    <div class="tutor-no-announcements">
-        <h2><?php _e('Gradebook not generated yet', 'tutor-pro'); ?></h2>
-        <p> <?php _e('After generate gradebook for this couse, you can see details report, quiz and assignments wise and you will get a final grade', 'tutor-pro'); ?> </p>
-		<?php get_gradebook_generate_form(); ?>
-    </div>
-	<?php
-	return;
-}
-
 $final_grade = get_generated_gradebook('final', $course_id);
 $assignment_grade = get_assignment_gradebook_by_course($course_id);
 $quiz_grade = get_quiz_gradebook_by_course($course_id);
-?>
-    <table class="course-single-gradebooks">
-        <tr>
-            <th><?php _e('Quiz', 'tutor-pro'); ?></th>
-            <th><?php _e('Assignments', 'tutor-pro'); ?></th>
-            <th><?php _e('Final Grade', 'tutor-pro'); ?></th>
-        </tr>
-        <tr>
-            <td><?php echo tutor_generate_grade_html($quiz_grade); ?></td>
-            <td><?php echo tutor_generate_grade_html($assignment_grade); ?></td>
-            <td><?php echo tutor_generate_grade_html($final_grade, 'outline'); ?></td>
-        </tr>
-    </table>
-<?php
+
+if($quiz_grade) {
+	?>
+	<table class="course-single-gradebooks">
+		<tr>
+			<th><?php _e('Quiz', 'tutor-pro'); ?></th>
+			<th><?php _e('Assignments', 'tutor-pro'); ?></th>
+			<th><?php _e('Final Grade', 'tutor-pro'); ?></th>
+		</tr>
+		<tr>
+			<td><?php echo tutor_generate_grade_html($quiz_grade); ?></td>
+			<td><?php echo tutor_generate_grade_html($assignment_grade); ?></td>
+			<td><?php echo tutor_generate_grade_html($final_grade, 'outline'); ?></td>
+		</tr>
+	</table>
+	<?php
+} else {
+	_e( 'No data to generate gradebook!', 'tutor-pro');
+}
 
 if (tutils()->count($grades)){
 	?>
@@ -79,14 +73,10 @@ if (tutils()->count($grades)){
 						}
 						?>
                     </p>
-                    <p class="datetime">
-						<?php _e('Last Updated at', 'tutor-pro'); ?>: <strong><?php echo date_i18n(get_option('date_format').' '.get_option('time_format'), strtotime($grade->update_date)); ?></strong>
-                    </p>
                 </td>
                 <td><?php echo tutor_generate_grade_html($grade, 'outline'); ?></td>
 
                 <td>
-
 					<?php
 					if ($grade->result_for === 'quiz'){
 
